@@ -1,4 +1,4 @@
-package src.math;
+package math;
 
 /**
  * Represents a mathematical 3-dimensional vector (x, y, z).
