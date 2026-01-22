@@ -84,7 +84,7 @@ public class Vec3 {
      * @param other The vector to subtract from this one.
      * @return A new Vec3 representing the difference of the two vectors.
      */
-    public Vec3 subtract(Vec3 other) {
+    public Vec3 sub(Vec3 other) {
         return new Vec3(this.x - other.x, this.y - other.y, this.z - other.z);
     }
 
