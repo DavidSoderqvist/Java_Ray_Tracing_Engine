@@ -8,19 +8,16 @@ package math;
  */
 public class Vec3 {
     
-    /** The x-coordinate (or Red component). */
     public final double x;
-    /** The y-coordinate (or Green component). */
     public final double y;
-    /** The z-coordinate (or Blue component). */
     public final double z;
     
     /**
      * Constructs a new 3D vector.
      *
-     * @param x The x-coordinate.
-     * @param y The y-coordinate.
-     * @param z The z-coordinate.
+     * @param x The x-coordinate or Red component.
+     * @param y The y-coordinate or Green component.
+     * @param z The z-coordinate or Blue component.
      */
     public Vec3(double x, double y, double z) {
         this.x = x;
@@ -46,17 +43,6 @@ public class Vec3 {
      */
     public Vec3 scale(double t) {
         return new Vec3(this.x * t, this.y * t, this.z * t);
-    }
-
-    /**
-     * Returns a string representation of the vector.
-     * Format: "(x, y, z)"
-     *
-     * @return A formatted string containing the coordinates.
-     */
-    @Override
-    public String toString() {
-        return "(" + x + ", " + y + ", " + z + ")";
     }
 
     /**
@@ -87,6 +73,5 @@ public class Vec3 {
     public Vec3 sub(Vec3 other) {
         return new Vec3(this.x - other.x, this.y - other.y, this.z - other.z);
     }
-
 
 }
