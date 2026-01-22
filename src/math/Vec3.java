@@ -58,4 +58,35 @@ public class Vec3 {
     public String toString() {
         return "(" + x + ", " + y + ", " + z + ")";
     }
+
+    /**
+     * Computes the length (magnitude) of the vector.
+     *
+     * @return The length of the vector.
+     */
+    public double length() {
+        return Math.sqrt(x*x + y*y + z*z);
+    }
+
+    /**
+     * Normalizes the vector to have a length of 1.
+     *
+     * @return A new Vec3 that is the normalized version of this vector.
+     */
+    public Vec3 normalize() {
+        double len = length();
+        return new Vec3(x / len, y / len, z / len);
+    }
+
+    /**
+     * Subtracts another vector from this vector.
+     *
+     * @param other The vector to subtract from this one.
+     * @return A new Vec3 representing the difference of the two vectors.
+     */
+    public Vec3 subtract(Vec3 other) {
+        return new Vec3(this.x - other.x, this.y - other.y, this.z - other.z);
+    }
+
+
 }
