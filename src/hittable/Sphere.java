@@ -3,6 +3,11 @@ package hittable;
 import math.Vec3;
 import math.Ray;
 
+/**
+ * Represents a sphere in 3D space that can be intersected by rays.
+ * 
+ * This class implements the Hittable interface to allow ray-sphere intersection tests.
+ */
 public class Sphere implements Hittable {
     private final Vec3 center;
     private final double radius;
@@ -18,6 +23,15 @@ public class Sphere implements Hittable {
         this.radius = radius;
     }
 
+    /**
+     * Determines if a ray hits the sphere within a specified range.
+     *
+     * @param ray    The ray to test for intersection.
+     * @param tMin   The minimum t value to consider for a hit.
+     * @param tMax   The maximum t value to consider for a hit.
+     * @param rec    A HitRecord to store intersection details if a hit occurs.
+     * @return       True if the ray hits the sphere, false otherwise.
+     */
     @Override
     public boolean hit(Ray ray, double tMin, double tMax, HitRecord rec) {
         Vec3 oc = ray.getOrigin().sub(center);
