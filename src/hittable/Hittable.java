@@ -11,5 +11,5 @@ public interface Hittable {
      * @param rec    A HitRecord to store intersection details if a hit occurs.
      * @return       True if the ray hits the object, false otherwise.
      */
-    boolean hit(Ray r, double tMin, double tMax, HitRecord rec);
+    boolean hit(Ray ray, double tMin, double tMax, HitRecord rec);
 }
