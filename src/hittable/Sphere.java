@@ -35,16 +35,22 @@ public class Sphere implements Hittable {
     @Override
     public boolean hit(Ray ray, double tMin, double tMax, HitRecord rec) {
         Vec3 oc = ray.getOrigin().sub(center);
+        
         double a = ray.getDirection().dot(ray.getDirection());
-        double b = oc.dot(ray.getDirection());
+        
+        // ÄNDRING 1: Vi kallar den half_b för att vara tydliga
+        double half_b = oc.dot(ray.getDirection());
+        
         double c = oc.dot(oc) - radius * radius;
         
-        double discriminant = b * b - 4 * a * c;
+        // ÄNDRING 2: Vi tar bort "4 *" här. Formeln blir (h^2 - ac) istället för (b^2 - 4ac)
+        double discriminant = half_b * half_b - a * c;
     
         if (discriminant > 0) {
             double root = Math.sqrt(discriminant);
         
-            double temp = (-b - root) / a;
+            // ÄNDRING 3: Vi använder half_b här
+            double temp = (-half_b - root) / a;
             if (temp < tMax && temp > tMin) {
                 rec.t = temp;
                 rec.p = ray.at(rec.t);
@@ -52,7 +58,8 @@ public class Sphere implements Hittable {
                 return true;
             }
 
-            temp = (-b + root) / a;
+            // ÄNDRING 4: Samma här
+            temp = (-half_b + root) / a;
             if (temp < tMax && temp > tMin) {
                 rec.t = temp;
                 rec.p = ray.at(rec.t);

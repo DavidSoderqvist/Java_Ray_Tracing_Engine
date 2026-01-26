@@ -1,54 +1,30 @@
 package main;
 
+import hittable.HitRecord;
+import hittable.Hittable;
+import hittable.HittableList;
+import hittable.Sphere;
 import math.Ray;
 import math.Vec3;
 import java.io.File;
 import java.io.PrintStream;
 
-/**
- * Main class for the Ray Tracer application.
- * 
- * This class sets up the camera, image dimensions, and handles the rendering loop.
- * It generates a simple gradient background and outputs the result to a PPM file.
- */
+
 public class Main {
-
     /**
-     * Checks if a ray hits a sphere and returns the distance to the hit point.
+     * Computes the color seen along a ray in the scene.
      *
-     * @param center The center of the sphere.
-     * @param radius The radius of the sphere.
-     * @param ray    The ray to test for intersection.
-     * @return The distance to the hit point, or -1.0 if no hit occurs.
+     * @param ray   The ray to trace.
+     * @param world The Hittable world containing objects to intersect with the ray.
+     * @return      The color as a Vec3.
      */
-    public static double hitSphere(Vec3 center, double radius, Ray ray) {
-        Vec3 oc = ray.getOrigin().sub(center);
-        double a = ray.getDirection().dot(ray.getDirection());
-        double b = 2.0 * oc.dot(ray.getDirection());
-        double c = oc.dot(oc) - radius * radius;
-        double discriminant = b*b - 4*a*c;
-        if (discriminant < 0) {
-            return -1.0;
-        } else {
-            return (-b - Math.sqrt(discriminant)) / (2.0*a);
-        }
-    }
+    public static Vec3 rayColor(Ray ray, Hittable world) {
+        HitRecord rec = new HitRecord();
 
-    /**
-     * Computes the color of a ray based on its intersection with a sphere and the background.
-     *
-     * @param ray The ray to compute the color for.
-     * @return A Vec3 representing the RGB color of the ray.
-     */
-    public static Vec3 rayColor(Ray ray) {
-        Vec3 sphereCenter = new Vec3(0, 0, -1);
-        double h = hitSphere(sphereCenter, 0.5, ray);
-        if (h > 0.0) {
-            Vec3 hitPoint = ray.at(h);
-            Vec3 normal = hitPoint.sub(sphereCenter).normalize();
-            return new Vec3(normal.x + 1, normal.y + 1, normal.z + 1).scale(0.5);
+        if (world.hit(ray, 0.001, Double.POSITIVE_INFINITY, rec)) {
+            return new Vec3(rec.normal.x + 1, rec.normal.y + 1, rec.normal.z + 1).scale(0.5);
         }
-        
+
         Vec3 unitDirection = ray.getDirection().normalize();
         double t = 0.5 * (unitDirection.y + 1.0);
         Vec3 white = new Vec3(1.0, 1.0, 1.0);
@@ -57,35 +33,38 @@ public class Main {
     }
 
     public static void main(String[] args) throws Exception {
-        // Camera and image setup
+        // --- BILD-INSTÄLLNINGAR ---
         double aspectRatio = 16.0 / 9.0;
         int imageWidth = 400;
         int imageHeight = (int)(imageWidth / aspectRatio);
 
-        // Viewport setup
+        // --- VÄRLDEN ---
+        HittableList world = new HittableList();
+        // Liten boll i mitten
+        world.add(new Sphere(new Vec3(0, 0, -1), 0.5));
+        // Stor boll under (Marken) - radie 100
+        world.add(new Sphere(new Vec3(0, -100.5, -1), 100));
+
+        // --- KAMERA ---
         double viewportHeight = 2.0;
         double viewportWidth = aspectRatio * viewportHeight;
         double focalLength = 1.0;
 
-        // Camera origin and viewport corners
         Vec3 origin = new Vec3(0, 0, 0);
         Vec3 horizontal = new Vec3(viewportWidth, 0, 0);
         Vec3 vertical = new Vec3(0, viewportHeight, 0);
-
-        // Lower left corner of the viewport
         Vec3 lowerLeftCorner = origin
                 .sub(horizontal.scale(0.5))
                 .sub(vertical.scale(0.5))
                 .sub(new Vec3(0, 0, focalLength));
 
-        // Rendering loop/ output
+        // --- RENDERING ---
         PrintStream fileOut = new PrintStream(new File("image.ppm"));
-        
         fileOut.println("P3");
         fileOut.println(imageWidth + " " + imageHeight);
         fileOut.println("255");
 
-        System.out.println("Rendering...");
+        System.out.println("Rendering World...");
 
         for (int j = imageHeight - 1; j >= 0; j--) {
             System.out.printf("\rScanlines remaining: %d ", j);
@@ -99,7 +78,9 @@ public class Main {
                         .sub(origin);
                 
                 Ray ray = new Ray(origin, direction);
-                Vec3 pixelColor = rayColor(ray);
+                
+                // Skicka med 'world' till rayColor
+                Vec3 pixelColor = rayColor(ray, world);
 
                 int ir = (int)(255.999 * pixelColor.x);
                 int ig = (int)(255.999 * pixelColor.y);
@@ -110,6 +91,7 @@ public class Main {
         }
 
         fileOut.close();
-        System.out.println("\nDone.");
+        System.out.println("\nDone! Check image.ppm.");
     }
+
 }
