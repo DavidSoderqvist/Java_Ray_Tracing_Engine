@@ -74,4 +74,14 @@ public class Vec3 {
         return new Vec3(this.x - other.x, this.y - other.y, this.z - other.z);
     }
 
+    /**
+     * Computes the dot product of this vector with another vector.
+     *
+     * @param other The other vector to compute the dot product with.
+     * @return The dot product as a double.
+     */
+    public double dot(Vec3 other) {
+        return this.x * other.x + this.y * other.y + this.z * other.z;
+    }
+
 }

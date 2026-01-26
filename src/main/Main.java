@@ -14,12 +14,41 @@ import java.io.PrintStream;
 public class Main {
 
     /**
-     * Computes the color seen along a given ray.
+     * Checks if a ray hits a sphere and returns the distance to the hit point.
      *
-     * @param ray The ray to evaluate.
-     * @return A Vec3 representing the RGB color.
+     * @param center The center of the sphere.
+     * @param radius The radius of the sphere.
+     * @param ray    The ray to test for intersection.
+     * @return The distance to the hit point, or -1.0 if no hit occurs.
+     */
+    public static double hitSphere(Vec3 center, double radius, Ray ray) {
+        Vec3 oc = ray.getOrigin().sub(center);
+        double a = ray.getDirection().dot(ray.getDirection());
+        double b = 2.0 * oc.dot(ray.getDirection());
+        double c = oc.dot(oc) - radius * radius;
+        double discriminant = b*b - 4*a*c;
+        if (discriminant < 0) {
+            return -1.0;
+        } else {
+            return (-b - Math.sqrt(discriminant)) / (2.0*a);
+        }
+    }
+
+    /**
+     * Computes the color of a ray based on its intersection with a sphere and the background.
+     *
+     * @param ray The ray to compute the color for.
+     * @return A Vec3 representing the RGB color of the ray.
      */
     public static Vec3 rayColor(Ray ray) {
+        Vec3 sphereCenter = new Vec3(0, 0, -1);
+        double h = hitSphere(sphereCenter, 0.5, ray);
+        if (h > 0.0) {
+            Vec3 hitPoint = ray.at(h);
+            Vec3 normal = hitPoint.sub(sphereCenter).normalize();
+            return new Vec3(normal.x + 1, normal.y + 1, normal.z + 1).scale(0.5);
+        }
+        
         Vec3 unitDirection = ray.getDirection().normalize();
         double t = 0.5 * (unitDirection.y + 1.0);
         Vec3 white = new Vec3(1.0, 1.0, 1.0);
