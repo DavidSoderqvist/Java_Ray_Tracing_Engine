@@ -84,4 +84,34 @@ public class Vec3 {
         return this.x * other.x + this.y * other.y + this.z * other.z;
     }
 
+    /**
+     * Generates a random vector with each component in the range [0, 1).
+     *
+     * @return A new Vec3 with random x, y, z components.
+     */
+    public static Vec3 random() {
+        return new Vec3(Math.random(), Math.random(), Math.random());
+    }
+
+    /**
+     * Generates a random vector with each component in the specified range [min, max).
+     *
+     * @param min The minimum value for each component.
+     * @param max The maximum value for each component.
+     * @return A new Vec3 with random x, y, z components within the specified range.
+     */
+    public static Vec3 random(double min, double max) {
+        return new Vec3(min + (max - min) * Math.random(),
+                        min + (max - min) * Math.random(),
+                        min + (max - min) * Math.random());
+    }   
+
+    public static Vec3 randomInUnitSphere() {
+        while (true) {
+            Vec3 p = Vec3.random(-1, 1);
+            if (p.length() * p.length() >= 1) continue;
+            return p;
+        }
+    }
+
 }
