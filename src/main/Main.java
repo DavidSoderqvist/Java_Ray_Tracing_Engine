@@ -14,22 +14,37 @@ import java.util.Random;
  * Main class for rendering a simple ray-traced scene.
  */
 public class Main {
+    
 
     /**
      * Computes the color seen along a ray in the scene.
      *
-     * @param ray   The ray to trace.
+     * @param ray The ray to trace.
      * @param world The world containing hittable objects.
-     * @return      The color as a Vec3.
+     * @param depth The remaining recursion depth for reflections.
+     * @return The color as a Vec3.
      */
-    public static Vec3 rayColor(Ray ray, Hittable world) {
+    public static Vec3 rayColor(Ray ray, Hittable world, int depth) {
         HitRecord rec = new HitRecord();
 
-        if (world.hit(ray, 0.001, Double.POSITIVE_INFINITY, rec)) {
-            // Färglägg baserat på normaler
-            return new Vec3(rec.normal.x + 1, rec.normal.y + 1, rec.normal.z + 1).scale(0.5);
+        // 1. SÄKERHETSSPÄRR: Om vi studsat för många gånger, sluta räkna ljus.
+        // Returnera svart (inget ljus).
+        if (depth <= 0) {
+            return new Vec3(0, 0, 0);
         }
 
+        if (world.hit(ray, 0.001, Double.POSITIVE_INFINITY, rec)) {
+            // Beräkna målet för den studsande strålen
+            Vec3 target = rec.p.add(rec.normal).add(Vec3.randomInUnitSphere());
+            
+            // Skapa den studsande strålen
+            Ray bouncedRay = new Ray(rec.p, target.sub(rec.p));
+            
+            // Rekursivt räkna färgen för den studsande strålen och dämpa den
+            return rayColor(bouncedRay, world, depth - 1).scale(0.5);
+        }
+
+        // Himlen (bakgrundsljuset)
         Vec3 unitDirection = ray.getDirection().normalize();
         double t = 0.5 * (unitDirection.y + 1.0);
         Vec3 white = new Vec3(1.0, 1.0, 1.0);
@@ -49,6 +64,7 @@ public class Main {
         int imageWidth = 400;
         int imageHeight = (int)(imageWidth / aspectRatio);
         int samplesPerPixel = 50; // Antialiasing
+        int maxDepth = 50; // Max antal studsar
 
         // --- OBJEKT ---
         HittableList world = new HittableList();
@@ -81,7 +97,7 @@ public class Main {
                     // Kameran sköter strålarna nu!
                     Ray ray = cam.getRay(u, v);
                     
-                    pixelColor = pixelColor.add(rayColor(ray, world));
+                    pixelColor = pixelColor.add(rayColor(ray, world, maxDepth));
                 }
 
                 // ColorUtil sköter skrivandet
