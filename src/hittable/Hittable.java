@@ -1,5 +1,6 @@
 package hittable;
 import math.Ray;
+import material.Material;
 
 public interface Hittable {
     /**
