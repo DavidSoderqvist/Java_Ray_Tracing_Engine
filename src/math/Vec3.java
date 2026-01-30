@@ -130,5 +130,16 @@ public class Vec3 {
         return v.sub(n.scale(2 * v.dot(n)));
     }
 
+    /**
+     * Calculates the Cross Product of two vectors.
+     * Result is a vector perpendicular to both.
+     */
+    public Vec3 cross(Vec3 other) {
+        return new Vec3(
+            this.y * other.z - this.z * other.y,
+            this.z * other.x - this.x * other.z,
+            this.x * other.y - this.y * other.x
+        );
+    }
 
 }
