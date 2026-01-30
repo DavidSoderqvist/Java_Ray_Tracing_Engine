@@ -106,6 +106,11 @@ public class Vec3 {
                         min + (max - min) * Math.random());
     }   
 
+    /**
+     * Generates a random vector inside a unit sphere.
+     *
+     * @return A new Vec3 representing a random point inside a unit sphere.
+     */
     public static Vec3 randomInUnitSphere() {
         while (true) {
             Vec3 p = Vec3.random(-1, 1);
@@ -113,5 +118,17 @@ public class Vec3 {
             return p;
         }
     }
+
+    /**
+     * Reflects a vector off a surface with the given normal.
+     *
+     * @param v The incoming vector to reflect.
+     * @param n The normal vector of the surface.
+     * @return A new Vec3 representing the reflected vector.
+     */
+    public static Vec3 reflect(Vec3 v, Vec3 n) {
+        return v.sub(n.scale(2 * v.dot(n)));
+    }
+
 
 }

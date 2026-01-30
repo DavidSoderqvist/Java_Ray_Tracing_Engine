@@ -72,19 +72,27 @@ public class Main {
         int maxDepth = 50;        // Max antal studsar (rekursionsdjup)
 
         // --- VÄRLDEN & MATERIAL ---
+        // --- VÄRLDEN & MATERIAL ---
         HittableList world = new HittableList();
 
-        // Skapa två olika material
-        // Marken: En gul-grön matt färg
+        // Marken får vara kvar som matt grön-gul (Lambertian)
         Material materialGround = new Lambertian(new Vec3(0.8, 0.8, 0.0));
-        // Mittenbollen: En röd-brun matt färg (eller lila om du vill ändra siffrorna!)
-        Material materialCenter = new Lambertian(new Vec3(0.7, 0.3, 0.3));
-
-        // Lägg till bollar och KOPPLA DEM till materialen
-        // Marken (Jättestor boll under oss)
+        
+        // Bollen i mitten blir nu... SILVER-METALL! 
+        // (Färgen (0.8, 0.8, 0.8) är ljusgrå, vilket ser ut som silver/spegel)
+        Material materialCenter = new material.Metal(new Vec3(0.8, 0.8, 0.8)); // <-- ÄNDRAT HÄR!
+        
+        // Vi kan lägga till en till boll om du vill se reflektioner mellan dem?
+        // Låt oss lägga en guld-boll till höger!
+        Material materialGold = new material.Metal(new Vec3(0.8, 0.6, 0.2)); // Guld-färg
+        
+        
+        // Lägg till objekten
         world.add(new Sphere(new Vec3(0, -100.5, -1), 100, materialGround));
-        // Bollen i mitten
-        world.add(new Sphere(new Vec3(0, 0, -1), 0.5, materialCenter));
+        world.add(new Sphere(new Vec3(0, 0, -1), 0.5, materialCenter)); // Silverbollen
+        
+        // Lägg till guldbollen lite till höger (x = 1.0)
+        world.add(new Sphere(new Vec3(1.0, 0, -1), 0.5, materialGold));
 
         // --- KAMERA ---
         Camera cam = new Camera();
