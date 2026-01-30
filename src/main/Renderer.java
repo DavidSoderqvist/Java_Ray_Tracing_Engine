@@ -79,6 +79,9 @@ public class Renderer {
 
         // 2. Intersection test
         if (world.hit(ray, 0.001, Double.POSITIVE_INFINITY, rec)) {
+            // return rec.normal.add(new Vec3(1,1,1)).scale(0.5); // Normal visualization
+            
+            
             Material.Wrapper wrapper = new Material.Wrapper();
             
             // 3. Material scattering
@@ -96,7 +99,9 @@ public class Renderer {
             }
             // If the ray was absorbed (e.g., by a black body), return black.
             return new Vec3(0, 0, 0);
+
         }
+        
 
         // 4. Background (Sky)
         // Linear interpolation (Lerp) between white and blue based on Y direction.
@@ -105,5 +110,6 @@ public class Renderer {
         Vec3 white = new Vec3(1.0, 1.0, 1.0);
         Vec3 blue = new Vec3(0.5, 0.7, 1.0);
         return white.scale(1.0 - t).add(blue.scale(t));
+    
     }
 }
