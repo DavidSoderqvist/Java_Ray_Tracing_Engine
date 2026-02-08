@@ -4,6 +4,10 @@ import hittable.HitRecord;
 import math.Ray;
 import math.Vec3;
 
+/**
+ * A simple material for debugging purposes. It colors the surface based on whether the ray hit the front face or the back face.
+ * Front face hits will be colored blue, and back face hits will be colored red.
+ */
 public class DebugMaterial implements Material {
     
     @Override

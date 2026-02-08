@@ -5,7 +5,7 @@ import math.Ray;
 import math.Vec3;
 
 /**
- * Represents a sphere in 3D space that can be hit by rays.
+ * Sphere class representing a sphere in the scene.
  */
 public class Sphere implements Hittable {
     private final Vec3 center;
@@ -19,6 +19,7 @@ public class Sphere implements Hittable {
     }
 
     @Override
+    // Ray-sphere intersection logic
     public boolean hit(Ray ray, double tMin, double tMax, HitRecord rec) {
         Vec3 oc = ray.getOrigin().sub(center);
         
@@ -59,6 +60,7 @@ public class Sphere implements Hittable {
     }
 
     @Override
+    // Axis-Aligned Bounding Box for the sphere
     public AABB boundingBox() {
         return new AABB(
             center.sub(new Vec3(radius, radius, radius)),

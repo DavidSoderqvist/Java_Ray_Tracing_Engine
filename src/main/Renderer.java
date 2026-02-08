@@ -29,7 +29,10 @@ public class Renderer {
     }
 
     /**
-     * Renders the scene and saves it as a PNG file.
+     * Renders the scene and saves it as a PNG image.
+     * @param world The scene to render.
+     * @param cam The camera to use for rendering.
+     * @param outputFile The file to save the rendered image to.
      */
     public void render(Hittable world, Camera cam, File outputFile) {
         // 1. Skapa en tom bild i RAM-minnet
@@ -104,14 +107,26 @@ public class Renderer {
         }
     }
 
-    // Hjälpmetod för att hålla värden mellan min och max
+    /**
+     * Clamps a value between a minimum and maximum.    
+     * @param x
+     * @param min
+     * @param max
+     * @return
+     */
     private double clamp(double x, double min, double max) {
         if (x < min) return min;
         if (x > max) return max;
         return x;
     }
 
-    // --- RAY COLOR LOGIK (Samma som innan) ---
+    /**
+     * Recursively computes the color seen along a ray by tracing it through the scene.
+     * @param ray
+     * @param world
+     * @param depth
+     * @return
+     */
     private Vec3 rayColor(Ray ray, Hittable world, int depth) {
         if (depth <= 0) return new Vec3(0, 0, 0);
 
@@ -133,7 +148,7 @@ public class Renderer {
             return new Vec3(0, 0, 0);
         }
 
-        // Bakgrund
+        // BaCKGROUND COLOR (Gradient)
         Vec3 unitDirection = ray.getDirection().normalize();
         double t = 0.5 * (unitDirection.y + 1.0);
         Vec3 white = new Vec3(1.0, 1.0, 1.0);

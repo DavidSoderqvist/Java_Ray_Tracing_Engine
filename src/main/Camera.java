@@ -3,6 +3,9 @@ package main;
 import math.Ray;
 import math.Vec3;
 
+/**
+ * Camera class to generate rays for each pixel, with support for depth of field.
+ */
 public class Camera {
     private Vec3 origin;
     private Vec3 lowerLeftCorner;
@@ -40,14 +43,14 @@ public class Camera {
         this.lensRadius = aperture / 2.0;
     }
 
+    /**
+     * Genererar en stråle som går genom pixeln (s, t) på bildplanet.
+     * s och t är i intervallet [0, 1], där (0, 0) är nedre vänstra hörnet och (1, 1) är övre högra hörnet.
+     */
     public Ray getRay(double s, double t) {
-        // För Depth of Field: Starta strålen från en slumpmässig punkt på linsen,
-        // inte bara från mitten.
         Vec3 rd = randomInUnitDisk().scale(lensRadius);
         Vec3 offset = u.scale(rd.x).add(v.scale(rd.y));
-
         Vec3 rayOrigin = origin.add(offset);
-        
         Vec3 direction = lowerLeftCorner
                 .add(horizontal.scale(s))
                 .add(vertical.scale(t))
@@ -57,7 +60,7 @@ public class Camera {
         return new Ray(rayOrigin, direction);
     }
 
-    // Hjälpmetod för att hitta en punkt på en platt lins
+    // Generates a random point within a unit circle (to simulate the aperture)
     private Vec3 randomInUnitDisk() {
         while (true) {
             Vec3 p = new Vec3(Math.random() * 2 - 1, Math.random() * 2 - 1, 0);

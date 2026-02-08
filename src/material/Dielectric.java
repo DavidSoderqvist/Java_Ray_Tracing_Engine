@@ -3,8 +3,11 @@ package material;
 import hittable.HitRecord;
 import math.Ray;
 import math.Vec3;
-import java.util.Random;
 
+/**
+ * Dielectric material for simulating transparent materials like glass.
+ * Implements refraction and reflection based on the index of refraction.
+ */
 public class Dielectric implements Material {
     private final double ir;
 
@@ -13,6 +16,13 @@ public class Dielectric implements Material {
     }
 
     @Override
+    /**
+     * Scatters the ray based on refraction and reflection. Uses Schlick's approximation for reflectance.
+      * @param rIn The incoming ray.
+      * @param rec The hit record containing information about the hit point.
+      * @param wrapper A wrapper to hold the scattered ray and attenuation.
+      * @return true if the ray is scattered, false otherwise.
+     */
     public boolean scatter(Ray rIn, HitRecord rec, Wrapper wrapper) {
         wrapper.attenuation = new Vec3(1.0, 1.0, 1.0);
         
@@ -47,6 +57,12 @@ public class Dielectric implements Material {
         return true;
     }
 
+    /**
+     * Schlick's approximation for reflectance. Ger en enkel formel för att beräkna hur mycket ljus som reflekteras vs bryts baserat på vinkeln och brytningsindex.     
+     * @param cosine
+     * @param refIdx
+     * @return
+     */
     private static double reflectance(double cosine, double refIdx) {
         double r0 = (1 - refIdx) / (1 + refIdx);
         r0 = r0 * r0;

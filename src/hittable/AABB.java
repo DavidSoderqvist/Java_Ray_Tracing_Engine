@@ -3,6 +3,9 @@ package hittable;
 import math.Ray;
 import math.Vec3;
 
+/**
+ * Axis-Aligned Bounding Box (AABB) class for efficient ray-object intersection tests.
+ */
 public class AABB {
     public final Vec3 min;
     public final Vec3 max;
@@ -12,7 +15,7 @@ public class AABB {
         this.max = max;
     }
 
-    // En supersnabb check om en stråle träffar lådan
+    /* Method to check if a ray intersects the bounding box. */
     public boolean hit(Ray r, double tMin, double tMax) {
         for (int a = 0; a < 3; a++) {
             double origin = (a == 0) ? r.getOrigin().x : (a == 1) ? r.getOrigin().y : r.getOrigin().z;
@@ -34,7 +37,7 @@ public class AABB {
         return true;
     }
     
-    // Slå ihop två lådor till en stor låda
+    /* Static method to create a bounding box that encompasses two given boxes. */
     public static AABB surroundingBox(AABB box0, AABB box1) {
         Vec3 small = new Vec3(
             Math.min(box0.min.x, box1.min.x),

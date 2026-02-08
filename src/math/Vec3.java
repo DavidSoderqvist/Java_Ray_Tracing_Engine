@@ -1,5 +1,8 @@
 package math;
 
+/**
+ * A simple 3D vector class for representing points, colors, and directions.
+ */
 public class Vec3 {
     public final double x, y, z;
 
@@ -9,8 +12,11 @@ public class Vec3 {
         this.z = z;
     }
 
-    // --- GRUNDLÄGGANDE MATEMATIK ---
-
+    /**
+     * Basic vector operations: addition, subtraction, scaling, dot product, cross product, length, normalization.      
+     * @param v
+     * @return
+     */
     public Vec3 add(Vec3 v) {
         return new Vec3(x + v.x, y + v.y, z + v.z);
     }
@@ -45,44 +51,49 @@ public class Vec3 {
 
     public Vec3 normalize() {
         double len = length();
-        if (len == 0) return new Vec3(0, 0, 0); // Skydd mot division med noll
+        if (len == 0) return new Vec3(0, 0, 0);
         return scale(1.0 / len);
     }
 
-    // --- FYSIG-VERKTYG (REFLEKTION & REFRAKTION) ---
-
     /**
-     * Studsar en vektor mot en normal (Spegling).
+     * Reflection and refraction methods for handling light interactions with materials.
+     * @param v
+     * @param n
+     * @return
      */
     public static Vec3 reflect(Vec3 v, Vec3 n) {
         return v.sub(n.scale(2 * v.dot(n)));
     }
 
     /**
-     * Bryter en vektor genom ett material (Glas/Vatten).
-     * Inkluderar skydd mot NaN (svarta pixlar).
+     * Refraction using Snell's law. Returns the refracted ray direction given an incident ray, surface normal, and the ratio of indices of refraction.
+     * @param uv
+     * @param n
+     * @param etaiOverEtat
+     * @return
      */
     public static Vec3 refract(Vec3 uv, Vec3 n, double etaiOverEtat) {
         double cosTheta = Math.min(uv.scale(-1).dot(n), 1.0);
-        
-        // Räkna ut den vinkelräta delen
         Vec3 rOutPerp = uv.add(n.scale(cosTheta)).scale(etaiOverEtat);
-        
-        // Räkna ut den parallella delen
-        // VIKTIGT: Math.abs här förhindrar att vi drar roten ur ett negativt tal (NaN)
         double rOutParallelVal = -Math.sqrt(Math.abs(1.0 - rOutPerp.lengthSquared()));
-        
         Vec3 rOutParallel = n.scale(rOutParallelVal);
-        
         return rOutPerp.add(rOutParallel);
     }
 
-    // --- SLUMP-VERKTYG ---
-
+    /**
+     * Utility methods for generating random vectors, which are useful for diffuse scattering and other effects in the ray tracer.
+     * @return
+     */
     public static Vec3 random() {
         return new Vec3(Math.random(), Math.random(), Math.random());
     }
 
+    /**
+     * Generates a random vector with each component in the range [min, max). This is useful for creating random colors or directions within a specific range.
+     * @param min
+     * @param max
+     * @return
+     */
     public static Vec3 random(double min, double max) {
         return new Vec3(
             min + (max - min) * Math.random(),
@@ -91,6 +102,10 @@ public class Vec3 {
         );
     }
 
+    /**
+     * Generates a random point inside a unit sphere. This is commonly used for diffuse scattering, where rays are scattered in random directions within a hemisphere.
+     * @return
+     */
     public static Vec3 randomInUnitSphere() {
         while (true) {
             Vec3 p = random(-1, 1);
@@ -98,7 +113,10 @@ public class Vec3 {
         }
     }
 
-    // Returnerar true om vektorn är extremt nära noll i alla riktningar
+    /**
+     * Checks if the vector is close to zero in all dimensions. This can be useful for avoiding issues with very small vectors that might cause numerical instability in calculations.
+     * @return
+     */
     public boolean nearZero() {
         double s = 1e-8;
         return (Math.abs(x) < s) && (Math.abs(y) < s) && (Math.abs(z) < s);
