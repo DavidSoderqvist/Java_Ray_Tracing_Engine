@@ -97,4 +97,10 @@ public class Vec3 {
             if (p.lengthSquared() < 1) return p;
         }
     }
+
+    // Returnerar true om vektorn är extremt nära noll i alla riktningar
+    public boolean nearZero() {
+        double s = 1e-8;
+        return (Math.abs(x) < s) && (Math.abs(y) < s) && (Math.abs(z) < s);
+    }
 }

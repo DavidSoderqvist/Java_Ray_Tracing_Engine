@@ -1,6 +1,6 @@
 # Java Ray Tracing Engine
 
-![Render Showcase](images/final_scene_2.png)
+![Render Showcase](images/render12.png)
 
 ## 📖 Overview
 This project is a high-performance **Path Tracer** built entirely from scratch in **Java**, without relying on any external graphics libraries (like OpenGL or DirectX).
