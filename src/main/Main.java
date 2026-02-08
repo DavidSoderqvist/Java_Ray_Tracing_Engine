@@ -17,7 +17,7 @@ public class Main {
     public static void main(String[] args) throws Exception {
         // --- CONFIGURATION ---
         int imageWidth = 1200; 
-        int samplesPerPixel = 1; // Higher samples for better quality (especially for metal)
+        int samplesPerPixel = 500; // Higher samples for better quality (especially for metal)
         int maxDepth = 50;
         
         double aspectRatio = 16.0 / 9.0;

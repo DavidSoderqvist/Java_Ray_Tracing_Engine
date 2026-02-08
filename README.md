@@ -1,6 +1,6 @@
 # Java Ray Tracing Engine
 
-![Render Showcase](images/render12.png)
+![Render Showcase](images/render19.png)
 
 ## 📖 Overview
 This project is a high-performance **Path Tracer** built entirely from scratch in **Java**, without relying on any external graphics libraries (like OpenGL or DirectX).
@@ -69,11 +69,10 @@ java -cp bin main.Main
 ---
 
 ## 🔮 Future Improvements
-Texture Mapping: Support for image-based textures on spheres (e.g., Earth maps).
-
-OBJ Loader: Ability to load complex 3D models (triangles/meshes).
-
-Lights: Implement emissive materials to create light sources other than the sky.
+* **Texture Mapping:** Support for image-based textures (e.g., mapping an image of the Earth onto a sphere).
+* **OBJ Loader:** Ability to load complex 3D models (triangle meshes) instead of just spheres and planes.
+* **Emissive Materials:** Create objects that emit their own light (like light bulbs or neon signs) to complement the sky lighting.
+* **Multithreading:** Optimize the renderer to use all available CPU cores for significantly faster rendering times.
 
 ---
 

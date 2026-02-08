@@ -121,4 +121,13 @@ public class Vec3 {
         double s = 1e-8;
         return (Math.abs(x) < s) && (Math.abs(y) < s) && (Math.abs(z) < s);
     }
+
+    /**
+     * Multiplies two vectors component-wise. This is often used for combining colors (e.g., when calculating the color contribution from a light source and a material's albedo).  
+     * @param v
+     * @return
+     */
+    public Vec3 multiply(Vec3 v) {
+        return new Vec3(this.x * v.x, this.y * v.y, this.z * v.z);
+    }
 }
