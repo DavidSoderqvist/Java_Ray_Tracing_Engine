@@ -1,0 +1,29 @@
+# --- Java Build Files ---
+# Vi vill inte spara kompilerade klassfiler
+*.class
+bin/
+build/
+out/
+
+# --- IDE / Editor Files ---
+# Inställningar för VS Code, IntelliJ eller Eclipse ska stanna på din dator
+.vscode/
+.idea/
+*.iml
+.classpath
+.project
+.settings/
+
+# --- OS System Files ---
+# Skräpfiler som Mac och Windows skapar
+.DS_Store
+Thumbs.db
+
+# --- Generated output ---
+# Ignorera alla genererade bilder så vi inte fyller GitHub med tester
+images/*.ppm
+images/*.png
+
+# ... MEN vi vill spara just din showcase-bild till README-filen!
+# (Lägg till ett '!' framför filnamnet du vill spara)
+!images/final_scene_2.png

@@ -1,8 +1,8 @@
 package hittable;
 
+import material.Material;
 import math.Ray;
 import math.Vec3;
-import material.Material;
 
 /**
  * Represents a sphere in 3D space that can be hit by rays.
@@ -56,5 +56,13 @@ public class Sphere implements Hittable {
             }
         }
         return false;
+    }
+
+    @Override
+    public AABB boundingBox() {
+        return new AABB(
+            center.sub(new Vec3(radius, radius, radius)),
+            center.add(new Vec3(radius, radius, radius))
+        );
     }
 }

@@ -2,16 +2,18 @@ package main;
 
 import hittable.HitRecord;
 import hittable.Hittable;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.Random;
+import javax.imageio.ImageIO;
 import material.Material;
 import math.Ray;
 import math.Vec3;
 
-import java.io.PrintStream;
-import java.util.Random;
-
 /**
  * Renderer class responsible for rendering the scene.
- * Handles pixel iteration, color calculation, and output.
+ * Now saves directly to PNG format using Java's ImageIO.
  */
 public class Renderer {
     private final int imageWidth;
@@ -27,24 +29,28 @@ public class Renderer {
     }
 
     /**
-     * Renders the scene and outputs the result in PPM format.
+     * Renders the scene and saves it as a PNG file.
      */
-    public void render(Hittable world, Camera cam, PrintStream out) {
-        // PPM Header
-        out.println("P3");
-        out.println(imageWidth + " " + imageHeight);
-        out.println("255");
+    public void render(Hittable world, Camera cam, File outputFile) {
+        // 1. Skapa en tom bild i RAM-minnet
+        BufferedImage image = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_RGB);
 
         System.out.println("Starting render...");
         Random random = new Random();
+        long startTime = System.currentTimeMillis();
 
+        // Loopa igenom pixlarna
         for (int j = imageHeight - 1; j >= 0; j--) {
-            System.out.printf("\rScanlines remaining: %d ", j);
+            // Visa framsteg i procent
+            if (j % 10 == 0) {
+                int progress = (int) ((1.0 - (double) j / imageHeight) * 100);
+                System.out.print("\rProgress: " + progress + "%");
+            }
+
             for (int i = 0; i < imageWidth; i++) {
-                
                 Vec3 pixelColor = new Vec3(0, 0, 0);
 
-                // Multisampling for Antialiasing
+                // Multisampling (Antialiasing)
                 for (int s = 0; s < samplesPerPixel; s++) {
                     double u = (i + random.nextDouble()) / (imageWidth - 1);
                     double v = (j + random.nextDouble()) / (imageHeight - 1);
@@ -53,63 +59,85 @@ public class Renderer {
                     pixelColor = pixelColor.add(rayColor(ray, world, maxDepth));
                 }
 
-                // Delegate color processing (gamma correction/clamping) to utility class
-                ColorUtil.writeColor(out, pixelColor, samplesPerPixel);
+                // --- FÄRG-KONVERTERING (Direkt till PNG-format) ---
+                
+                // A. Skala ner färgen baserat på antalet samples
+                double r = pixelColor.x / samplesPerPixel;
+                double g = pixelColor.y / samplesPerPixel;
+                double b = pixelColor.z / samplesPerPixel;
+
+                // B. Gamma-korrigering (Gamma 2.0 = roten ur)
+                // Detta gör bilden ljusare och mer korrekt för ögat.
+                r = Math.sqrt(r);
+                g = Math.sqrt(g);
+                b = Math.sqrt(b);
+
+                // C. Konvertera 0.0-1.0 till 0-255
+                int ir = (int) (256 * clamp(r, 0.0, 0.999));
+                int ig = (int) (256 * clamp(g, 0.0, 0.999));
+                int ib = (int) (256 * clamp(b, 0.0, 0.999));
+
+                // D. Packa ihop RGB till ett enda heltal (Bit-shifting)
+                // Java hanterar färger som 0xRRGGBB
+                int rgb = (ir << 16) | (ig << 8) | ib;
+
+                // E. Spara pixel i bilden
+                // OBS: BufferedImage har (0,0) uppe till vänster, men vår loop
+                // börjar med j=högst (nedre vänstra hörnet i 3D-världen).
+                // Vi måste vända på Y-axeln: (imageHeight - 1 - j)
+                image.setRGB(i, imageHeight - 1 - j, rgb);
             }
         }
-        System.out.println("\nDone!");
+
+        System.out.println("\nRendering finished via ImageIO.");
+
+        // Spara bilden som PNG
+        try {
+            ImageIO.write(image, "png", outputFile);
+            System.out.println("Image saved to: " + outputFile.getAbsolutePath());
+            
+            long endTime = System.currentTimeMillis();
+            System.out.println("Time taken: " + (endTime - startTime) / 1000.0 + "s");
+            
+        } catch (IOException e) {
+            System.err.println("Error saving image: " + e.getMessage());
+        }
     }
 
-    /**
-     * Computes the color seen along a ray by recursively tracing it through the scene.
-     * 
-     * @param ray The ray to trace.
-     * @param world The scene containing hittable objects.
-     * @param depth The remaining recursion depth.
-     * @return The color as a Vec3.
-     */
+    // Hjälpmetod för att hålla värden mellan min och max
+    private double clamp(double x, double min, double max) {
+        if (x < min) return min;
+        if (x > max) return max;
+        return x;
+    }
+
+    // --- RAY COLOR LOGIK (Samma som innan) ---
     private Vec3 rayColor(Ray ray, Hittable world, int depth) {
+        if (depth <= 0) return new Vec3(0, 0, 0);
+
         HitRecord rec = new HitRecord();
-
-        // 1. Recursion limit / Safety guard
-        // If we've bounced too many times, no more light is gathered.
-        if (depth <= 0) {
-            return new Vec3(0, 0, 0);
-        }
-
-        // 2. Intersection test
+        
         if (world.hit(ray, 0.001, Double.POSITIVE_INFINITY, rec)) {
-            // return rec.normal.add(new Vec3(1,1,1)).scale(0.5); // Normal visualization
-            
-            
             Material.Wrapper wrapper = new Material.Wrapper();
-            
-            // 3. Material scattering
-            // Ask the material how it affects the ray.
             if (rec.material.scatter(ray, rec, wrapper)) {
-                Vec3 attenuation = wrapper.attenuation;
-                Vec3 colorFromNextBounce = rayColor(wrapper.scatteredRay, world, depth - 1);
                 
-                // Combine the material color with the light from the next bounce
+                // Rekursion
+                Vec3 colorFromNext = rayColor(wrapper.scatteredRay, world, depth - 1);
+
                 return new Vec3(
-                    attenuation.x * colorFromNextBounce.x,
-                    attenuation.y * colorFromNextBounce.y,
-                    attenuation.z * colorFromNextBounce.z
+                    wrapper.attenuation.x * colorFromNext.x,
+                    wrapper.attenuation.y * colorFromNext.y,
+                    wrapper.attenuation.z * colorFromNext.z
                 );
             }
-            // If the ray was absorbed (e.g., by a black body), return black.
             return new Vec3(0, 0, 0);
-
         }
-        
 
-        // 4. Background (Sky)
-        // Linear interpolation (Lerp) between white and blue based on Y direction.
+        // Bakgrund
         Vec3 unitDirection = ray.getDirection().normalize();
         double t = 0.5 * (unitDirection.y + 1.0);
         Vec3 white = new Vec3(1.0, 1.0, 1.0);
         Vec3 blue = new Vec3(0.5, 0.7, 1.0);
         return white.scale(1.0 - t).add(blue.scale(t));
-    
     }
 }

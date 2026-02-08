@@ -2,14 +2,12 @@ package main;
 
 import hittable.HittableList;
 import hittable.Sphere;
+import java.io.File;
 import material.Dielectric;
 import material.Lambertian;
-import material.Metal;
 import material.Material;
+import material.Metal;
 import math.Vec3;
-
-import java.io.File;
-import java.io.PrintStream;
 
 public class Main {
 
@@ -71,6 +69,9 @@ public class Main {
         Material material3 = new Metal(new Vec3(0.7, 0.6, 0.5));
         world.add(new Sphere(new Vec3(4, 1, 0), 1.0, material3));
 
+        // Slå in hela listan i en BVH-struktur för att snabba upp sökningen!
+        hittable.BVHNode bvhWorld = new hittable.BVHNode(world);
+
         // --- KAMERA ---
         // Vi backar rejält och zoomar in lite för en snygg "teleobjektiv"-effekt
         Vec3 lookFrom = new Vec3(13, 2, 3);
@@ -90,17 +91,18 @@ public class Main {
         int counter = 1;
         File outputFile;
         while (true) {
-            outputFile = new File(directory, "final_scene_" + counter + ".ppm");
+            outputFile = new File(directory, "final_scene_" + counter + ".png");
             if (!outputFile.exists()) break;
             counter++;
         }
 
-        System.out.println("Starting heavy render! Output: " + outputFile.getPath());
-        PrintStream fileOut = new PrintStream(outputFile);
+        System.out.println("Starting render! Output target: " + outputFile.getName());
         
         Renderer renderer = new Renderer(imageWidth, imageHeight, samplesPerPixel, maxDepth);
-        renderer.render(world, cam, fileOut);
-
-        fileOut.close();
+        
+        // Skicka in File-objektet istället för PrintStream
+        renderer.render(bvhWorld, cam, outputFile);
+        
+        // Ta bort fileOut.close() om du hade det kvar, det behövs inte längre.
     }
 }

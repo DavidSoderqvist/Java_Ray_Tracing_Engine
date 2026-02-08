@@ -1,8 +1,8 @@
 package hittable;
 
-import math.Ray;
 import java.util.ArrayList;
 import java.util.List;
+import math.Ray;
 
 /**
  * A list of Hittable objects.
@@ -41,4 +41,17 @@ public class HittableList implements Hittable {
 
         return hitAnything;
     }
+
+    // Lägg till denna metod längst ner i HittableList:
+    @Override
+    public AABB boundingBox() {
+        if (objects.isEmpty()) return null;
+
+        AABB outputBox = objects.get(0).boundingBox();
+        for (int i = 1; i < objects.size(); i++) {
+            outputBox = AABB.surroundingBox(outputBox, objects.get(i).boundingBox());
+        }
+        return outputBox;
+    }
+
 }
