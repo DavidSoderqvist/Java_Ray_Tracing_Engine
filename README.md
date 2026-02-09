@@ -64,7 +64,7 @@ javac -d bin -sourcepath src src/main/Main.java
 3. Run the engine:
 java -cp bin main.Main
 
-4. View the Output: The engine will generate a high-quality image file (e.g., final_scene_1.png) in the images/ directory.
+4. View the Output: The engine will generate a high-quality image file (e.g., render1.png) in the images/ directory.
 
 ---
 
