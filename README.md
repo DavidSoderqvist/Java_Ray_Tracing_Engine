@@ -3,15 +3,14 @@
 ![Render Showcase](images/render19.png)
 
 ## 📖 Overview
-This project is a high-performance **Path Tracer** built entirely from scratch in **Java**, without relying on any external graphics libraries (like OpenGL or DirectX).
+This project is a **Path Tracer** built entirely from scratch in **Java**.
 
-The goal of this project was to understand the fundamental mathematics and physics behind computer graphics. It simulates light transport by tracing rays from the camera into the scene, calculating intersections, and recursively resolving light bounces to generate photorealistic images with global illumination.
+The goal of this project was to understand the mathematics and physics behind computer graphics. It simulates light transport by tracing rays from the camera into the scene, calculating intersections, and recursively resolving light bounces to generate photorealistic images with global illumination.
 
 ---
 
 ## ✨ Key Features
 * **High-Performance Architecture:**
-    * **Multithreading:** Utilizes Java Streams (`IntStream.parallel`) to run parallel rendering on all available CPU cores.
     * **Bounding Volume Hierarchy (BVH):** Implements an AABB (Axis-Aligned Bounding Box) tree structure to optimize intersection checks from linear $O(N)$ to logarithmic $O(\log N)$ time complexity.
 * **Physically Based Rendering (PBR):** Implements realistic light behavior including reflection and refraction.
 * **Material System:**
@@ -41,11 +40,12 @@ A snippet demonstrating the implementation of Snell's Law for glass materials:
 ```java
 // From Vec3.java
 public static Vec3 refract(Vec3 uv, Vec3 n, double etaiOverEtat) {
-    double cosTheta = Math.min(uv.scale(-1).dot(n), 1.0);
-    Vec3 rOutPerp = uv.add(n.scale(cosTheta)).scale(etaiOverEtat);
-    double rOutParallelVal = -Math.sqrt(Math.abs(1.0 - rOutPerp.lengthSquared()));
-    return rOutPerp.add(n.scale(rOutParallelVal));
-}
+        double cosTheta = Math.min(uv.scale(-1).dot(n), 1.0);
+        Vec3 rOutPerp = uv.add(n.scale(cosTheta)).scale(etaiOverEtat);
+        double rOutParallelVal = -Math.sqrt(Math.abs(1.0 - rOutPerp.lengthSquared()));
+        Vec3 rOutParallel = n.scale(rOutParallelVal);
+        return rOutPerp.add(rOutParallel);
+    }
 ```
 ---
 
@@ -55,7 +55,7 @@ Java Development Kit (JDK) 8 or higher.
 
 ### Installation & Running
 1. Clone the repository:
-git clone [https://github.com/DavidSoderqvist/RenderEngine.git](https://github.com/DavidSoderqvist/RenderEngine.git)
+git clone [https://github.com/DavidSoderqvist/Java_Ray_Tracing_Engine.git](https://github.com/DavidSoderqvist/Java_Ray_Tracing_Engine.git)
 cd RenderEngine
 
 2. Compile the source code:
